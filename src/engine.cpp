@@ -11,6 +11,10 @@ Engine::Engine() : running(false) {
 	this->initialize();
 }
 
+Engine::~Engine() {
+	cleanup();
+}
+
 bool Engine::initialize() {
 	game_field_width = 78;
 	game_field_height = 22;
@@ -94,17 +98,16 @@ bool Engine::is_opposite_key(int key, int ref) {
 coord Engine::check_if_moving_outside(coord new_position) {
 	if (new_position.row < 0) {
 		new_position.row += game_field->size();
-	} else if (new_position.row > game_field->size()) {
+	} else if (new_position.row >= game_field->size()) {
 		new_position.row -= game_field->size();
 	}
 
 	if (new_position.col < 0) {
 		new_position.col += (*game_field)[0].size();
-	} else if (new_position.col > (*game_field)[0].size()) {
+	} else if (new_position.col >= (*game_field)[0].size()) {
 		new_position.col -= (*game_field)[0].size();
 	}
 
-	LOG(INFO) << "New position: " << new_position.row << " " << new_position.col;
 	return new_position;
 }
 
@@ -182,8 +185,6 @@ void Engine::loop() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	}
-
-	cleanup();
 }
 
 void Engine::clear_game_field() {

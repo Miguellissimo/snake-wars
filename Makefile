@@ -35,10 +35,10 @@ ifeq ("$(wildcard $(EASYLOGGING)/*)","")
 endif
 
 test: 
-ifeq ("$(wildcard $(CATCH_PATH))","")
+ifeq ("$(wildcard $(CATCH))","")
 	wget -P $(CATCH) https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
 endif
-	$(CXX) $(CFLAGS) -g $(SRC_DIR) $(TEST_FILES) -o tester
+	$(CXX) $(CFLAGS) -DUNIT_TEST=1 -g $(SRC_DIR) $(filter-out src/main.cpp, $(CPP_FILES)) $(TEST_FILES) $(LIBRARY_INCLUDE) -o tester $(LDFLAGS)
 	./tester
 
 clean:

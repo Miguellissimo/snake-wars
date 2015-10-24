@@ -14,9 +14,13 @@ struct coord {
 };
 
 class Engine {
+#ifndef UNIT_TESTING
+	friend class EngineTester;
+#endif
 
 public:
 	Engine();
+	~Engine();
 	bool initialize();
 	void new_game();
 	void run();

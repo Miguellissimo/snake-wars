@@ -28,6 +28,7 @@
 *.app
 snake_wars-debug
 snake_wars
+tester
 
 #project files
 .project
