@@ -7,7 +7,7 @@
 #include "terminal.h"
 #include "easylogging/easylogging++.h"
 
-Engine::Engine() : running(false) {
+Engine::Engine() : running(false), broccoli_placed(false) {
 	this->initialize();
 }
 
@@ -79,16 +79,19 @@ int Engine::process_event() {
 	if (not (snake_p1->back().row == broccoli->row and snake_p1->back().col == broccoli->col)) {
 		snake_p1->pop_front();
 	} else {
-		broccoli->row = -1;
-		broccoli->col = -1;
+		broccoli_placed = false;
+		//broccoli->row = -1;
+		//broccoli->col = -1;
 	}
+
+	return 0;
 }
 
 bool Engine::is_opposite_key(int key, int ref) {
-	if (ref == KEY_LEFT and key == KEY_RIGHT or
-		ref == KEY_RIGHT and key == KEY_LEFT or
-		ref == KEY_UP and key == KEY_DOWN or
-		ref == KEY_DOWN and key == KEY_UP) {
+	if ((ref == KEY_LEFT and key == KEY_RIGHT) or
+		(ref == KEY_RIGHT and key == KEY_LEFT) or
+		(ref == KEY_UP and key == KEY_DOWN) or
+		(ref == KEY_DOWN and key == KEY_UP)) {
 		return true;
 	} else {
 		return false;
@@ -132,6 +135,7 @@ void Engine::new_game() {
 	broccoli = std::make_shared<coord>();
 	broccoli->row = 21;
 	broccoli->col = 50;
+	broccoli_placed = true;
 
 	// give both snakes a default direction
 	last_snake_p1_direction = KEY_RIGHT;
@@ -139,8 +143,8 @@ void Engine::new_game() {
 }
 
 void Engine::dedug_visualize_field() {
-	for(int r = 0; r != game_field->size(); ++r) {
-		for (int c = 0; c != (*game_field)[0].size(); ++c) {
+	for(size_t r = 0; r != game_field->size(); ++r) {
+		for (size_t c = 0; c != (*game_field)[0].size(); ++c) {
 			std::cout << (*game_field)[r][c];
 		}
 
@@ -155,7 +159,7 @@ void Engine::place_snake_in_field(std::shared_ptr<std::list<coord>> snake, int p
 }
 
 void Engine::place_yum_yum_randomly() {
-	if (broccoli->row == -1 and broccoli->col == -1) {
+	if (not broccoli_placed) {
 		std::mt19937 rng;
 		rng.seed(std::random_device()());
 		std::uniform_int_distribution<std::mt19937::result_type> cg(2,game_field_width-2);
@@ -163,6 +167,8 @@ void Engine::place_yum_yum_randomly() {
 
 		broccoli->row = rg(rng);
 		broccoli->col = rg(rng);
+
+		broccoli_placed = true;
 	}
 
 	(*game_field)[broccoli->row][broccoli->col] = 3;
@@ -188,8 +194,8 @@ void Engine::loop() {
 }
 
 void Engine::clear_game_field() {
-	for(int r = 0; r != game_field->size(); ++r) {
-		for (int c = 0; c != (*game_field)[0].size(); ++c) {
+	for(size_t r = 0; r != game_field->size(); ++r) {
+		for (size_t c = 0; c != (*game_field)[0].size(); ++c) {
 			(*game_field)[r][c] = 0;
 		}
 	}
@@ -220,9 +226,9 @@ void Engine::render() {
 	mvwprintw(window, 0, 0, horizontal.c_str());
 	mvwprintw(window, height-1, 0, horizontal.c_str());
 
-	for(int r = 0; r != game_field->size(); ++r) {
+	for(size_t r = 0; r != game_field->size(); ++r) {
 		mvwprintw(window, r+1, 0, "|");
-		for (int c = 0; c != (*game_field)[0].size(); ++c) {
+		for (size_t c = 0; c != (*game_field)[0].size(); ++c) {
 			switch((*game_field)[r][c]) {
 			case 0:
 				mvwprintw(window, r+1, c+1, " ");

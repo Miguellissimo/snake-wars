@@ -10,7 +10,7 @@ template <typename T, size_t rows, size_t cols>
 using GameField = std::array<std::array<T, cols>, rows>;
 
 struct coord {
-	int row, col;
+	size_t row, col;
 };
 
 class Engine {
@@ -49,6 +49,7 @@ private:
 	int last_snake_p1_direction;
 	int last_snake_p2_direction;
 	std::shared_ptr<coord> broccoli;
+	bool broccoli_placed;
 
 	WINDOW *window;
 };
