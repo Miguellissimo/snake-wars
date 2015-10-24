@@ -26,3 +26,17 @@
 *.exe
 *.out
 *.app
+snake_wars-debug
+snake_wars
+
+#project files
+.project
+.cproject
+*.*~
+.settings
+
+# logs
+logs
+
+#external libraries
+extern

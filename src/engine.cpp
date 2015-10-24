@@ -60,6 +60,9 @@ int Engine::process_event() {
 
 	last_snake_p1_direction = c;
 
+	// check if snake moved out of the map
+	new_position = check_if_moving_outside(new_position);
+
 	if ((*game_field)[new_position.row][new_position.col] == 1 or
 		(*game_field)[new_position.row][new_position.col] == 2) {
 		LOG(INFO) << "COLLISION, Game over!";
@@ -86,6 +89,23 @@ bool Engine::is_opposite_key(int key, int ref) {
 	} else {
 		return false;
 	}
+}
+
+coord Engine::check_if_moving_outside(coord new_position) {
+	if (new_position.row < 0) {
+		new_position.row += game_field->size();
+	} else if (new_position.row > game_field->size()) {
+		new_position.row -= game_field->size();
+	}
+
+	if (new_position.col < 0) {
+		new_position.col += (*game_field)[0].size();
+	} else if (new_position.col > (*game_field)[0].size()) {
+		new_position.col -= (*game_field)[0].size();
+	}
+
+	LOG(INFO) << "New position: " << new_position.row << " " << new_position.col;
+	return new_position;
 }
 
 void Engine::new_game() {
