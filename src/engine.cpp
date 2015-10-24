@@ -33,8 +33,8 @@ int Engine::process_event() {
 	int c = wgetch(window);
 	flushinp();
 
-	if (not has_key(c)) {
-		return 0;
+	if (not has_key(c) or is_opposite_key(c, last_snake_p1_direction)) {
+		c = last_snake_p1_direction;
 	}
 
 	auto head = snake_p1->back();
@@ -58,8 +58,14 @@ int Engine::process_event() {
 		break;
 	}
 
-	snake_p1->push_back(new_position);
+	last_snake_p1_direction = c;
 
+	if ((*game_field)[new_position.row][new_position.col] == 1 or
+		(*game_field)[new_position.row][new_position.col] == 2) {
+		LOG(INFO) << "COLLISION, Game over!";
+	}
+
+	snake_p1->push_back(new_position);
 
 	place_snake_in_field(snake_p1, 1);
 
@@ -68,6 +74,17 @@ int Engine::process_event() {
 	} else {
 		broccoli->row = -1;
 		broccoli->col = -1;
+	}
+}
+
+bool Engine::is_opposite_key(int key, int ref) {
+	if (ref == KEY_LEFT and key == KEY_RIGHT or
+		ref == KEY_RIGHT and key == KEY_LEFT or
+		ref == KEY_UP and key == KEY_DOWN or
+		ref == KEY_DOWN and key == KEY_UP) {
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -92,6 +109,10 @@ void Engine::new_game() {
 	broccoli = std::make_shared<coord>();
 	broccoli->row = 21;
 	broccoli->col = 50;
+
+	// give both snakes a default direction
+	last_snake_p1_direction = KEY_RIGHT;
+	last_snake_p2_direction = KEY_LEFT;
 }
 
 void Engine::dedug_visualize_field() {

@@ -33,6 +33,7 @@ private:
 	void clear_game_field();
 	void place_snake_in_field(std::shared_ptr<std::list<coord>> snake, int player);
 	void place_yum_yum_randomly();
+	bool is_opposite_key(int key, int ref);
 
 	bool running;
 	int game_field_width = 78;
